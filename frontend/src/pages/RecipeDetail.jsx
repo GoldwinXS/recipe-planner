@@ -25,7 +25,6 @@ import {
 } from '@mui/material'
 import CircularProgress from '@mui/material/CircularProgress'
 import AccessTimeIcon from '@mui/icons-material/AccessTime'
-import PeopleIcon from '@mui/icons-material/People'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
@@ -329,7 +328,7 @@ export default function RecipeDetail() {
           )
         })() : (
           <Typography variant="body2" color="text.secondary">
-            No nutrition data yet. Click "Fill with AI" to estimate macros.
+            No nutrition data yet. Click &quot;Fill with AI&quot; to estimate macros.
           </Typography>
         )}
       </Paper>
@@ -506,7 +505,7 @@ export default function RecipeDetail() {
         </DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ mb: 2 }}>
-            Describe how you'd like to modify &ldquo;{recipe.title}&rdquo;. The AI will generate a new version — you can then save it as a separate recipe.
+            Describe how you&apos;d like to modify &ldquo;{recipe.title}&rdquo;. The AI will generate a new version — you can then save it as a separate recipe.
           </DialogContentText>
 
           <TextField

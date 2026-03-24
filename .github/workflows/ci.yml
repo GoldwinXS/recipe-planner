@@ -45,6 +45,7 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+          cache-dependency-path: backend/requirements/*.txt
 
       - name: Install dependencies
         run: pip install -r backend/requirements/development.txt
@@ -85,6 +86,9 @@ jobs:
 
       - name: Run ESLint
         run: npm run lint
+
+      - name: Run tests
+        run: npm test
 
       - name: Build
         run: npm run build

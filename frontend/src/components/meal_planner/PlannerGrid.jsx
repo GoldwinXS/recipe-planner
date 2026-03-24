@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { Box, Typography, Paper, IconButton, Divider, Tooltip, Popover, Button, Stack, useMediaQuery } from '@mui/material'
+import { Box, Typography, Paper, IconButton, Divider, Tooltip, Popover, Button, Stack } from '@mui/material'
 import { useTheme } from '@mui/material/styles'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import CloseIcon from '@mui/icons-material/Close'

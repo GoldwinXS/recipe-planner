@@ -313,7 +313,7 @@ Food safety: chicken/fish/beef fridge max 3–4 days; soups 4–5 days; grains 3
       {isDemo && (
         <Alert severity="info" sx={{ mb: 2 }} icon={false}>
           <strong>Demo account — read only.</strong> You can explore all features, but changes
-          (adding/removing meals, editing recipes, etc.) won't be saved.
+          (adding/removing meals, editing recipes, etc.) won&apos;t be saved.
         </Alert>
       )}
       <Box

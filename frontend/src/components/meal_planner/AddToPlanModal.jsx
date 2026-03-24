@@ -14,7 +14,7 @@ import {
   Stack,
 } from '@mui/material'
 import { listRecipes } from '../../api/recipes'
-import { DAY_NAMES, MEAL_TYPES, getWeekDays } from '../../utils/weekUtils'
+import { DAY_NAMES, MEAL_TYPES } from '../../utils/weekUtils'
 
 const MEAL_LABELS = {
   breakfast: 'Breakfast',

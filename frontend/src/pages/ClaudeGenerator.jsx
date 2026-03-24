@@ -5,14 +5,12 @@ import {
   Typography,
   Button,
   TextField,
-  Paper,
   Grid,
   Chip,
   Stack,
   List,
   ListItem,
   ListItemText,
-  Divider,
   LinearProgress,
   Alert,
   Tooltip,
@@ -361,7 +359,7 @@ export default function ClaudeGenerator() {
     if (s.jsonRecipe) setJsonRecipe(s.jsonRecipe)
     if (s.generating) setGenerating(true)
     if (s.error) setError(s.error)
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   // Pick up results that finished while we were on another page
   useEffect(() => {
