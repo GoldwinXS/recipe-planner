@@ -337,7 +337,8 @@ class RecipeFetchUrlView(APIView):
             code = exc.response.status_code if exc.response is not None else 0
             if code == 403:
                 return Response(
-                    {'detail': 'This site blocked access (403). Sites like AllRecipes use bot protection. Try a different recipe site, or paste the recipe text directly.'},
+                    {'detail': 'This site blocked access (403). Sites like AllRecipes use '
+                     'bot protection. Try a different recipe site, or paste the recipe text directly.'},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             return Response({'detail': f'Could not fetch the page (HTTP {code}).'}, status=status.HTTP_400_BAD_REQUEST)
@@ -362,7 +363,7 @@ class RecipeFetchUrlView(APIView):
         )
         target = recipe_containers[0] if recipe_containers else soup.body or soup
 
-        lines = [l.strip() for l in target.get_text(separator='\n').splitlines() if l.strip()]
+        lines = [ln.strip() for ln in target.get_text(separator='\n').splitlines() if ln.strip()]
         cleaned = html_module.unescape('\n'.join(lines))[:6000]
 
         return Response({'text': cleaned, 'source_url': url})
@@ -494,7 +495,7 @@ class RecipeRemixView(APIView):
 
     def post(self, request, pk):
         from django.shortcuts import get_object_or_404
-        recipe = get_object_or_404(Recipe, pk=pk, user=request.user)
+        get_object_or_404(Recipe, pk=pk, user=request.user)
 
         instruction = request.data.get("instruction", "").strip()
         if not instruction:

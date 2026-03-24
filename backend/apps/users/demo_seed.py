@@ -30,12 +30,12 @@ INGREDIENTS = [
     ("Pasta",           "carb",      "g",     371, 13,  75,    1.5),
     ("Bread Flour",     "carb",      "cup",   364, 12,  76,    1.0),
     ("Potatoes",        "carb",      "g",      77,  2,  17,    0.1),
-    ("Sweet Potato",    "carb",      "g",      86,  1.6,20,    0.1),
+    ("Sweet Potato",    "carb",      "g",      86,  1.6, 20,   0.1),
     ("Oats",            "carb",      "cup",   389, 17,  66,    7.0),
     ("Broccoli",        "vegetable", "g",      34,  2.8, 7,    0.4),
     ("Spinach",         "vegetable", "g",      23,  2.9, 3.6,  0.4),
     ("Cherry Tomatoes", "vegetable", "g",      18,  0.9, 3.9,  0.2),
-    ("Garlic",          "vegetable", "piece", 149,  6.4,33,    0.5),
+    ("Garlic",          "vegetable", "piece", 149,  6.4, 33,   0.5),
     ("Onion",           "vegetable", "piece",  40,  1.1, 9.3,  0.1),
     ("Bell Pepper",     "vegetable", "piece",  31,  1,   6,    0.3),
     ("Olive Oil",       "other",     "tbsp",  884,  0,   0,  100.0),
@@ -63,7 +63,7 @@ STARTER_RECIPES = [
         "ingredients": [
             ("Chicken Breast", "700", "g",    ""),
             ("Butter",         "2",   "tbsp", ""),
-            ("Garlic",         "4",   "piece","minced"),
+            ("Garlic",         "4",   "piece", "minced"),
             ("Olive Oil",      "1",   "tbsp", ""),
             ("Salt",           "1",   "tsp",  ""),
             ("Black Pepper",   "0.5", "tsp",  "freshly ground"),
@@ -111,9 +111,9 @@ STARTER_RECIPES = [
         "ingredients": [
             ("Brown Rice",   "250", "g",    "uncooked"),
             ("Broccoli",     "250", "g",    "cut into florets"),
-            ("Bell Pepper",  "2",   "piece","sliced"),
-            ("Onion",        "1",   "piece","sliced"),
-            ("Garlic",       "3",   "piece","minced"),
+            ("Bell Pepper",  "2",   "piece", "sliced"),
+            ("Onion",        "1",   "piece", "sliced"),
+            ("Garlic",       "3",   "piece", "minced"),
             ("Olive Oil",    "2",   "tbsp", ""),
             ("Cumin",        "1",   "tsp",  ""),
             ("Salt",         "1",   "tsp",  ""),
@@ -136,7 +136,7 @@ STARTER_RECIPES = [
         "tags": ["breakfast", "high-protein", "quick"],
         "ingredients": [
             ("Greek Yogurt",    "200",  "g",    "full-fat"),
-            ("Eggs",            "1",    "piece",""),
+            ("Eggs",            "1",    "piece", ""),
             ("Cherry Tomatoes", "80",   "g",    ""),
             ("Olive Oil",       "1",    "tbsp", ""),
             ("Salt",            "0.25", "tsp",  ""),
@@ -238,11 +238,11 @@ def seed_demo_user(user):
     today = date.today()
     monday = today - timedelta(days=today.weekday())
 
-    chicken  = recipe_objs.get("Garlic Butter Chicken")
-    salmon   = recipe_objs.get("Salmon & Brown Rice Bowl")
-    stirfry  = recipe_objs.get("Vegetable Stir-Fry with Rice")
-    yogurt   = recipe_objs.get("Greek Yogurt Protein Bowl")
-    potato   = recipe_objs.get("Baked Potato with Toppings")
+    chicken = recipe_objs.get("Garlic Butter Chicken")
+    salmon = recipe_objs.get("Salmon & Brown Rice Bowl")
+    stirfry = recipe_objs.get("Vegetable Stir-Fry with Rice")
+    yogurt = recipe_objs.get("Greek Yogurt Protein Bowl")
+    potato = recipe_objs.get("Baked Potato with Toppings")
 
     if not all([chicken, salmon, stirfry, yogurt, potato]):
         return  # recipes not created yet, skip meal plan

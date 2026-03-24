@@ -390,7 +390,8 @@ class MealPlanPrepGuideView(APIView):
         lines = [f"Weekly meal plan for the week of {week_start_date.strftime('%B %d, %Y')}:\n"]
         for day_idx in range(7):
             is_cooking = day_idx in cooking_days
-            label = f"{day_names[day_idx]} (COOKING DAY)" if is_cooking else f"{day_names[day_idx]} (non-cooking — leftovers)"
+            suffix = "(COOKING DAY)" if is_cooking else "(non-cooking — leftovers)"
+            label = f"{day_names[day_idx]} {suffix}"
             lines.append(label + ":")
             day_entries = [e for e in plan.entries.all() if e.day == day_idx]
             if day_entries:

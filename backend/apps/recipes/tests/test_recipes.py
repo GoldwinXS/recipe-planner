@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from apps.ingredients.models import Ingredient
-from apps.recipes.models import Recipe, RecipeIngredient, Tag
+from apps.recipes.models import Recipe, RecipeIngredient
 
 User = get_user_model()
 

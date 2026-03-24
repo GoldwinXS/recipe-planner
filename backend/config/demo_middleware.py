@@ -25,7 +25,8 @@ class DemoAccountReadOnlyMiddleware:
         ):
             body = json.dumps(
                 {
-                    "detail": "This is a read-only demo account. Create a free account to save your own recipes and plans.",
+                    "detail": "This is a read-only demo account. "
+                    "Create a free account to save your own recipes and plans.",
                     "demo": True,
                 }
             )

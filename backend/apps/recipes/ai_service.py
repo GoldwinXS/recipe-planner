@@ -34,7 +34,8 @@ JSON in this exact structure — no preamble, no markdown, no explanation:
   "tags": ["string"]
 }
 
-In the instructions, always include the exact quantity and unit when first using an ingredient (e.g. "Add 2 cups flour" not just "Add flour")."""
+In the instructions, always include the exact quantity and unit when first \
+using an ingredient (e.g. "Add 2 cups flour" not just "Add flour")."""
 
 
 class AIParseError(Exception):
@@ -225,7 +226,10 @@ def generate_with_openai_compatible(
 
 # ── Macros lookup ─────────────────────────────────────────────────────────────
 
-MACROS_SYSTEM_PROMPT = """You are a nutritionist. Return ONLY valid JSON with estimated average nutritional data per 100g for every ingredient listed. Use common whole-food forms (e.g. raw chicken breast, all-purpose flour, whole milk).
+MACROS_SYSTEM_PROMPT = """\
+You are a nutritionist. Return ONLY valid JSON with estimated average \
+nutritional data per 100g for every ingredient listed. Use common \
+whole-food forms (e.g. raw chicken breast, all-purpose flour, whole milk).
 
 {
   "ingredients": [
@@ -343,7 +347,9 @@ def generate_recipe(
 
 # ── Recipe remix ──────────────────────────────────────────────────────────────
 
-REMIX_SYSTEM_PROMPT = """You are a professional chef. You will be given an existing recipe and an instruction for how to modify it.
+REMIX_SYSTEM_PROMPT = """\
+You are a professional chef. You will be given an existing recipe \
+and an instruction for how to modify it.
 Return ONLY valid JSON in the same structure as the original — no preamble, no markdown, no explanation:
 
 {
@@ -425,7 +431,10 @@ def remix_recipe(
 
 # ── Meal plan suggestion ───────────────────────────────────────────────────────
 
-MEAL_PLAN_SYSTEM_PROMPT = """You are a nutritionist and meal planning expert. Given a list of recipes, suggest a practical, realistic meal plan that minimises food waste, respects safe storage windows, and flags meals that need to be frozen.
+MEAL_PLAN_SYSTEM_PROMPT = """\
+You are a nutritionist and meal planning expert. Given a list of \
+recipes, suggest a practical, realistic meal plan that minimises food \
+waste, respects safe storage windows, and flags meals that need to be frozen.
 
 Return ONLY valid JSON in this exact structure — no preamble, no markdown, no explanation:
 
@@ -584,7 +593,9 @@ def suggest_meal_plan(
 
 # ── Meal prep guide ────────────────────────────────────────────────────────────
 
-PREP_GUIDE_SYSTEM_PROMPT = """You are a professional meal prep coach. Given a weekly meal plan and cooking days, create a practical, encouraging meal prep guide.
+PREP_GUIDE_SYSTEM_PROMPT = """\
+You are a professional meal prep coach. Given a weekly meal plan and \
+cooking days, create a practical, encouraging meal prep guide.
 
 Return ONLY valid JSON in this exact structure — no preamble, no markdown, no explanation:
 

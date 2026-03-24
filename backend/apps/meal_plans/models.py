@@ -59,7 +59,7 @@ class MealPlanEntry(models.Model):
     servings = models.DecimalField(max_digits=5, decimal_places=2)
 
     class StorageType(models.TextChoices):
-        FRESH  = "fresh",  "Fresh (same day)"
+        FRESH = "fresh", "Fresh (same day)"
         FRIDGE = "fridge", "Refrigerate"
         FREEZE = "freeze", "Freeze"
 
