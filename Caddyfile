@@ -1,0 +1,42 @@
+bitstream.mywire.org {
+
+    # Security headers (matches original Nginx config)
+    header {
+        X-Content-Type-Options  "nosniff"
+        X-Frame-Options         "DENY"
+        Referrer-Policy         "strict-origin-when-cross-origin"
+        # Required for WebLLM (SharedArrayBuffer / WebGPU)
+        Cross-Origin-Opener-Policy   "same-origin"
+        Cross-Origin-Embedder-Policy "require-corp"
+    }
+
+    # Django API — longer timeout for AI generation calls
+    handle /api/* {
+        reverse_proxy backend:8000 {
+            header_up X-Forwarded-Proto {scheme}
+            transport http {
+                read_timeout 120s
+            }
+        }
+    }
+
+    # Django admin + collected static files
+    handle /admin/* {
+        reverse_proxy backend:8000 {
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    handle /static/* {
+        reverse_proxy backend:8000 {
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    # React SPA — serve index.html for all other routes
+    handle {
+        root * /srv
+        try_files {path} /index.html
+        file_server
+    }
+}
