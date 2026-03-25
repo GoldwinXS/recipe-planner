@@ -157,7 +157,7 @@ class TestClaudeServiceUnit:
 
         mock_response = _make_claude_response(json.dumps(VALID_RECIPE_JSON))
 
-        with patch("apps.recipes.ai_service.anthropic.Anthropic") as MockClient:
+        with patch("anthropic.Anthropic") as MockClient:
             MockClient.return_value.messages.create.return_value = mock_response
             result = generate_with_claude("lemon herb chicken")
 
@@ -169,7 +169,7 @@ class TestClaudeServiceUnit:
 
         mock_response = _make_claude_response("This is not JSON at all.")
 
-        with patch("apps.recipes.ai_service.anthropic.Anthropic") as MockClient:
+        with patch("anthropic.Anthropic") as MockClient:
             MockClient.return_value.messages.create.return_value = mock_response
             with pytest.raises(AIParseError):
                 generate_with_claude("anything")
@@ -179,7 +179,7 @@ class TestClaudeServiceUnit:
 
         from apps.recipes.ai_service import generate_with_claude
 
-        with patch("apps.recipes.ai_service.anthropic.Anthropic") as MockClient:
+        with patch("anthropic.Anthropic") as MockClient:
             MockClient.return_value.messages.create.side_effect = (
                 anthropic_lib.APIConnectionError(request=MagicMock())
             )
