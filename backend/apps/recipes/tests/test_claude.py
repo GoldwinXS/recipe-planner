@@ -7,7 +7,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from apps.recipes.claude_service import ClaudeParseError, ClaudeUnavailableError
+from apps.recipes.ai_service import AIParseError, AIUnavailableError
 from apps.recipes.models import Recipe, RecipeIngredient
 
 User = get_user_model()
@@ -70,7 +70,11 @@ class TestRecipeGenerateEndpoint:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data["title"] == "Lemon Herb Chicken"
-        mock_generate.assert_called_once_with("lemon herb chicken")
+        mock_generate.assert_called_once_with(
+            "lemon herb chicken",
+            provider="claude", ollama_url="", model="",
+            api_key="", api_base="",
+        )
         # Nothing should have been persisted
         assert Recipe.objects.count() == 0
 
@@ -83,7 +87,7 @@ class TestRecipeGenerateEndpoint:
     def test_generate_returns_422_when_claude_parse_error(self, auth_client):
         with patch(
             "apps.recipes.views.generate_recipe",
-            side_effect=ClaudeParseError("Bad JSON from Claude."),
+            side_effect=AIParseError("Bad JSON from Claude."),
         ):
             url = reverse("recipe-generate")
             response = auth_client.post(
@@ -95,7 +99,7 @@ class TestRecipeGenerateEndpoint:
     def test_generate_returns_503_when_claude_unavailable(self, auth_client):
         with patch(
             "apps.recipes.views.generate_recipe",
-            side_effect=ClaudeUnavailableError("API is down."),
+            side_effect=AIUnavailableError("API is down."),
         ):
             url = reverse("recipe-generate")
             response = auth_client.post(
@@ -149,35 +153,35 @@ class TestRecipeSaveGeneratedEndpoint:
 @pytest.mark.django_db
 class TestClaudeServiceUnit:
     def test_generate_recipe_parses_valid_json(self):
-        from apps.recipes.claude_service import generate_recipe
+        from apps.recipes.ai_service import generate_with_claude
 
         mock_response = _make_claude_response(json.dumps(VALID_RECIPE_JSON))
 
-        with patch("apps.recipes.claude_service.anthropic.Anthropic") as MockClient:
+        with patch("apps.recipes.ai_service.anthropic.Anthropic") as MockClient:
             MockClient.return_value.messages.create.return_value = mock_response
-            result = generate_recipe("lemon herb chicken")
+            result = generate_with_claude("lemon herb chicken")
 
         assert result["title"] == "Lemon Herb Chicken"
         assert len(result["ingredients"]) == 2
 
     def test_generate_recipe_raises_parse_error_on_bad_json(self):
-        from apps.recipes.claude_service import generate_recipe
+        from apps.recipes.ai_service import generate_with_claude
 
         mock_response = _make_claude_response("This is not JSON at all.")
 
-        with patch("apps.recipes.claude_service.anthropic.Anthropic") as MockClient:
+        with patch("apps.recipes.ai_service.anthropic.Anthropic") as MockClient:
             MockClient.return_value.messages.create.return_value = mock_response
-            with pytest.raises(ClaudeParseError):
-                generate_recipe("anything")
+            with pytest.raises(AIParseError):
+                generate_with_claude("anything")
 
     def test_generate_recipe_raises_unavailable_on_connection_error(self):
         import anthropic as anthropic_lib
 
-        from apps.recipes.claude_service import generate_recipe
+        from apps.recipes.ai_service import generate_with_claude
 
-        with patch("apps.recipes.claude_service.anthropic.Anthropic") as MockClient:
+        with patch("apps.recipes.ai_service.anthropic.Anthropic") as MockClient:
             MockClient.return_value.messages.create.side_effect = (
                 anthropic_lib.APIConnectionError(request=MagicMock())
             )
-            with pytest.raises(ClaudeUnavailableError):
-                generate_recipe("anything")
+            with pytest.raises(AIUnavailableError):
+                generate_with_claude("anything")

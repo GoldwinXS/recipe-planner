@@ -175,13 +175,13 @@ class TestShoppingListCheck:
             week_start=MONDAY,
         )
         url = reverse("shopping-list-check", kwargs={"week_start": str(MONDAY), "pk": item.pk})
-        response = auth_client.post(url)
+        response = auth_client.patch(url)
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data["checked"] is True
 
         # Toggle again
-        response = auth_client.post(url)
+        response = auth_client.patch(url)
         assert response.data["checked"] is False
 
     def test_cannot_check_another_users_item(self, api_client, db, user, flour):
@@ -198,7 +198,7 @@ class TestShoppingListCheck:
         )
         api_client.force_authenticate(user=user)
         url = reverse("shopping-list-check", kwargs={"week_start": str(MONDAY), "pk": item.pk})
-        response = api_client.post(url)
+        response = api_client.patch(url)
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
