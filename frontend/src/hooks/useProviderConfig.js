@@ -13,7 +13,15 @@ function defaultConfig() {
 export function loadProviderConfig() {
   try {
     const raw = localStorage.getItem(PROVIDER_STORAGE_KEY)
-    return raw ? JSON.parse(raw) : defaultConfig()
+    if (!raw) return defaultConfig()
+    const saved = JSON.parse(raw)
+    // If the user never explicitly chose a provider (old default of 'claude'),
+    // re-evaluate: switch to browser if WebGPU is now available.
+    if (!saved.userChoseProvider && saved.provider === 'claude') {
+      const fresh = defaultConfig()
+      if (fresh.provider === 'browser') return { ...saved, ...fresh }
+    }
+    return saved
   } catch {
     return defaultConfig()
   }
@@ -24,7 +32,8 @@ export default function useProviderConfig() {
 
   const update = useCallback((patch) => {
     setConfig((prev) => {
-      const next = { ...prev, ...patch }
+      // Mark as explicit choice whenever the user changes anything in the dialog
+      const next = { ...prev, ...patch, userChoseProvider: true }
       localStorage.setItem(PROVIDER_STORAGE_KEY, JSON.stringify(next))
       return next
     })

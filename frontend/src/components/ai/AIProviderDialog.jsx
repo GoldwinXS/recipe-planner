@@ -95,6 +95,12 @@ export default function AIProviderDialog({ open, onClose }) {
 
           {config.provider === 'claude' && (
             <>
+              {!config.api_key && (
+                <Alert severity="info" sx={{ py: 0.5 }}>
+                  Enter your Anthropic API key below to use Claude. Get one at{' '}
+                  <strong>console.anthropic.com</strong>.
+                </Alert>
+              )}
               <TextField
                 size="small"
                 label="Anthropic API Key"
@@ -103,13 +109,8 @@ export default function AIProviderDialog({ open, onClose }) {
                 value={config.api_key || ''}
                 onChange={(e) => update({ api_key: e.target.value })}
                 fullWidth
-                helperText="Stored in your browser only — never sent to our server. Get one at console.anthropic.com."
+                helperText="Stored in your browser only — never sent to our servers"
               />
-              {!config.api_key && (
-                <Alert severity="warning" sx={{ py: 0.5 }}>
-                  No API key set — requests will fall back to the server key if one is configured.
-                </Alert>
-              )}
             </>
           )}
 
