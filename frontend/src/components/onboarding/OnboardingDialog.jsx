@@ -6,7 +6,6 @@ import {
   Typography,
   Button,
   MobileStepper,
-  useMediaQuery,
 } from '@mui/material'
 import { useTheme, alpha } from '@mui/material/styles'
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
@@ -43,7 +42,6 @@ export default function OnboardingDialog() {
   const [open, setOpen] = useState(false)
   const [step, setStep] = useState(0)
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const isDark = theme.palette.mode === 'dark'
 
   useEffect(() => {
