@@ -386,7 +386,7 @@ export default function ClaudeGenerator() {
 
   const providerLabel =
     isBrowser
-      ? `Browser — ${BROWSER_MODELS.find((m) => m.id === providerConfig.model)?.label?.split(' — ')[0] || 'no model'}${webLLM.status === 'ready' ? '' : ' (not loaded)'}`
+      ? `Browser — ${BROWSER_MODELS.find((m) => m.id === providerConfig.model)?.label?.split(' — ')[0] || 'no model'}`
       : providerConfig.provider === 'claude' ? 'Claude'
       : providerConfig.provider === 'ollama' ? `Ollama — ${providerConfig.model || '?'}`
       : `OpenAI-compat — ${providerConfig.model || '?'}`
@@ -589,13 +589,6 @@ export default function ClaudeGenerator() {
           sx={{ fontSize: 12 }}
         />
       </Box>
-
-      {/* ── Browser loading hint ── */}
-      {isBrowser && webLLM.status === 'idle' && mode !== 'json' && (
-        <Alert severity="info" sx={{ mb: 2, borderRadius: 3 }}>
-          Browser AI is selected but not loaded — clicking Generate will download it automatically.
-        </Alert>
-      )}
 
       {/* ════ Generate mode ════ */}
       {mode === 'generate' && (
