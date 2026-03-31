@@ -94,9 +94,23 @@ export default function AIProviderDialog({ open, onClose }) {
           </FormControl>
 
           {config.provider === 'claude' && (
-            <Alert severity="info" sx={{ py: 0.5 }}>
-              Uses the <strong>ANTHROPIC_API_KEY</strong> configured on the server. No additional settings required.
-            </Alert>
+            <>
+              <TextField
+                size="small"
+                label="Anthropic API Key"
+                placeholder="sk-ant-..."
+                type="password"
+                value={config.api_key || ''}
+                onChange={(e) => update({ api_key: e.target.value })}
+                fullWidth
+                helperText="Stored in your browser only — never sent to our server. Get one at console.anthropic.com."
+              />
+              {!config.api_key && (
+                <Alert severity="warning" sx={{ py: 0.5 }}>
+                  No API key set — requests will fall back to the server key if one is configured.
+                </Alert>
+              )}
+            </>
           )}
 
           {config.provider === 'ollama' && (

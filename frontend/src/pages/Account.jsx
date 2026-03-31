@@ -36,13 +36,14 @@ export default function Account() {
   const [passwordSuccess, setPasswordSuccess] = useState(false)
   const [passwordError, setPasswordError] = useState(null)
 
-  // Nutrition goals
+  // Nutrition goals + AI instructions
   const [goals, setGoals] = useState({
     daily_calorie_goal: '',
     daily_protein_g: '',
     daily_carbs_g: '',
     daily_fat_g: '',
     cooking_days: [6],
+    ai_instructions: '',
   })
   const [goalsSaving, setGoalsSaving] = useState(false)
   const [goalsSuccess, setGoalsSuccess] = useState(false)
@@ -58,6 +59,7 @@ export default function Account() {
         daily_carbs_g: d.daily_carbs_g ?? '',
         daily_fat_g: d.daily_fat_g ?? '',
         cooking_days: d.cooking_days?.length ? d.cooking_days : [6],
+        ai_instructions: d.ai_instructions ?? '',
       })
     }).catch(() => {})
   }, [])
@@ -135,6 +137,7 @@ export default function Account() {
         daily_protein_g: goals.daily_protein_g !== '' ? Number(goals.daily_protein_g) : null,
         daily_carbs_g: goals.daily_carbs_g !== '' ? Number(goals.daily_carbs_g) : null,
         daily_fat_g: goals.daily_fat_g !== '' ? Number(goals.daily_fat_g) : null,
+        ai_instructions: goals.ai_instructions,
       }
       const res = await updateProfile(payload)
       updateUser({
@@ -143,6 +146,7 @@ export default function Account() {
         daily_protein_g: res.data.daily_protein_g,
         daily_carbs_g: res.data.daily_carbs_g,
         daily_fat_g: res.data.daily_fat_g,
+        ai_instructions: res.data.ai_instructions,
       })
       setGoalsSuccess(true)
     } catch (err) {
@@ -358,6 +362,28 @@ export default function Account() {
                   Select at least one cooking day.
                 </Typography>
               )}
+            </Box>
+
+            {/* Dietary / AI instructions */}
+            <Box>
+              <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+                Dietary &amp; AI Instructions
+              </Typography>
+              <Typography variant="caption" color="text.secondary" display="block" mb={1}>
+                These are added to every AI prompt automatically — use them for allergies, dislikes, dietary style, or any standing preference.
+              </Typography>
+              <TextField
+                multiline
+                minRows={3}
+                maxRows={8}
+                fullWidth
+                size="small"
+                placeholder="e.g. I'm lactose intolerant. No shellfish. Prefer high-protein meals. Keep meals under 600 kcal."
+                value={goals.ai_instructions}
+                onChange={(e) => setGoals((g) => ({ ...g, ai_instructions: e.target.value }))}
+                inputProps={{ maxLength: 1000 }}
+                helperText={`${goals.ai_instructions.length}/1000`}
+              />
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>

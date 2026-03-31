@@ -117,6 +117,7 @@ class MealPlanSuggestView(APIView):
 
     def post(self, request):
         preferences = request.data.get("preferences", "")
+        ai_instructions = request.data.get("ai_instructions", "") or getattr(request.user, "ai_instructions", "")
         days = min(int(request.data.get("days", 7)), 28)
         provider = request.data.get("provider", "claude")
         ollama_url = request.data.get("ollama_url", "")
@@ -199,6 +200,7 @@ class MealPlanSuggestView(APIView):
                 model=model,
                 api_key=api_key,
                 api_base=api_base,
+                ai_instructions=ai_instructions,
             )
         except AIUnavailableError as exc:
             logger.warning("AI unavailable for meal plan suggest: %s", exc)

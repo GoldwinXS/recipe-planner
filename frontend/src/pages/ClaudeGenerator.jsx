@@ -29,6 +29,7 @@ import { generateRecipe, saveGeneratedRecipe, fetchRecipeUrl } from '../api/reci
 import { recipeGenStore } from '../state/generationStore'
 import ErrorAlert from '../components/common/ErrorAlert'
 import useProviderConfig from '../hooks/useProviderConfig'
+import useAuth from '../hooks/useAuth'
 import { useWebLLM } from '../contexts/WebLLMContext'
 import { BROWSER_MODELS, BROWSER_SYSTEM_PROMPT, BROWSER_MAX_PARSE_CHARS, MAX_PARSE_CHARS } from '../utils/browserLLM'
 
@@ -307,6 +308,7 @@ export default function ClaudeGenerator() {
   const [mode, setMode] = useState('generate')
   const [providerConfig] = useProviderConfig()
   const webLLM = useWebLLM()
+  const { user } = useAuth()
   const theme = useTheme()
   const navigate = useNavigate()
 
@@ -398,6 +400,11 @@ export default function ClaudeGenerator() {
         ? ''
         : providerConfig.model || ''
 
+  const withInstructions = (text) => {
+    const instr = user?.ai_instructions?.trim()
+    return instr ? `${text}\n\nDietary & personal instructions (always follow these): ${instr}` : text
+  }
+
   // ── Handlers ────────────────────────────────────────────────────────────────
 
   const handleSave = async (recipe, source) => {
@@ -428,12 +435,12 @@ export default function ClaudeGenerator() {
         await webLLM.ensureModelLoaded(defaultModelId)
         const content = await webLLM.generate([
           { role: 'system', content: BROWSER_SYSTEM_PROMPT },
-          { role: 'user', content: prompt.trim() },
+          { role: 'user', content: withInstructions(prompt.trim()) },
         ])
         recipe = tryParseJson(content)
         if (!recipe) throw new Error('Model returned invalid JSON. Try rephrasing or switch to the 3B model in AI Provider Settings.')
       } else {
-        const res = await generateRecipe(prompt.trim(), providerConfig)
+        const res = await generateRecipe(withInstructions(prompt.trim()), providerConfig)
         recipe = res.data
       }
       setGenerated(recipe)
@@ -481,7 +488,7 @@ export default function ClaudeGenerator() {
     if (storeLoadingKey) recipeGenStore.set({ [storeLoadingKey]: true, [storeErrorKey]: null, [storeRecipeKey]: null })
     const maxChars = isBrowser ? BROWSER_MAX_PARSE_CHARS : MAX_PARSE_CHARS
     const truncated = text.slice(0, maxChars)
-    const parsePrompt = PARSE_PREAMBLE + truncated + (text.length > maxChars ? '\n\n[TEXT TRUNCATED]' : '')
+    const parsePrompt = withInstructions(PARSE_PREAMBLE + truncated + (text.length > maxChars ? '\n\n[TEXT TRUNCATED]' : ''))
     try {
       if (isBrowser) {
         await webLLM.ensureModelLoaded(defaultModelId)

@@ -51,7 +51,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             "id", "username", "email", "date_joined",
             "daily_calorie_goal", "daily_protein_g", "daily_carbs_g", "daily_fat_g",
-            "cooking_days", "is_demo_temp",
+            "cooking_days", "is_demo_temp", "ai_instructions",
         )
         read_only_fields = fields
 
@@ -68,7 +68,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
             "id", "username", "email", "date_joined",
             "current_password", "new_password",
             "daily_calorie_goal", "daily_protein_g", "daily_carbs_g", "daily_fat_g",
-            "cooking_days",
+            "cooking_days", "ai_instructions",
         )
         read_only_fields = ("id", "email", "date_joined")
 

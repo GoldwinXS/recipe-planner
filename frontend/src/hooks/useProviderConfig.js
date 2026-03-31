@@ -2,12 +2,20 @@ import { useState, useCallback } from 'react'
 
 export const PROVIDER_STORAGE_KEY = 'recipeAiProviderConfig'
 
+function defaultConfig() {
+  const webGpuSupported = typeof navigator !== 'undefined' && 'gpu' in navigator
+  return {
+    provider: webGpuSupported ? 'browser' : 'claude',
+    model: 'Llama-3.2-1B-Instruct-q4f16_1-MLC',
+  }
+}
+
 export function loadProviderConfig() {
   try {
     const raw = localStorage.getItem(PROVIDER_STORAGE_KEY)
-    return raw ? JSON.parse(raw) : { provider: 'claude' }
+    return raw ? JSON.parse(raw) : defaultConfig()
   } catch {
-    return { provider: 'claude' }
+    return defaultConfig()
   }
 }
 

@@ -207,6 +207,7 @@ Food safety: chicken/fish/beef fridge max 3–4 days; soups 4–5 days; grains 3
         }
 
         if (preferences) userPrompt += `\n\nAdditional preferences: ${preferences}`
+        if (user?.ai_instructions?.trim()) userPrompt += `\n\nPersistent dietary instructions (always follow): ${user.ai_instructions.trim()}`
 
         step(`Asking browser AI to plan your ${isMonth ? 'month' : 'week'}…`)
         const content = await webLLM.generate([
@@ -243,7 +244,7 @@ Food safety: chicken/fish/beef fridge max 3–4 days; soups 4–5 days; grains 3
         }
       } else {
         step('Sending your recipes to AI…')
-        const res = await suggestMealPlan(providerConfig, preferences, days)
+        const res = await suggestMealPlan(providerConfig, preferences, days, user?.ai_instructions || '')
         suggestions = res.data?.suggestions || []
       }
 

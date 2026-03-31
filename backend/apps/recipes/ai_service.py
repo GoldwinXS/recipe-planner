@@ -108,12 +108,14 @@ def _parse_json(raw: str) -> dict:
 
 # ── Claude ────────────────────────────────────────────────────────────────────
 
-def generate_with_claude(prompt: str) -> dict:
+def generate_with_claude(prompt: str, api_key: str = "") -> dict:
     import anthropic
 
-    api_key = settings.ANTHROPIC_API_KEY
+    api_key = api_key or settings.ANTHROPIC_API_KEY
     if not api_key:
-        raise AIUnavailableError("ANTHROPIC_API_KEY is not configured on the server.")
+        raise AIUnavailableError(
+            "No Anthropic API key found. Add your key in AI Provider Settings."
+        )
 
     try:
         client = anthropic.Anthropic(api_key=api_key)
@@ -314,7 +316,7 @@ def generate_recipe(
     """
     provider = _normalize_provider(provider)
     if provider == "claude":
-        return generate_with_claude(prompt)
+        return generate_with_claude(prompt, api_key=api_key)
 
     if provider == "ollama":
         if not ollama_url:
@@ -486,6 +488,7 @@ def suggest_meal_plan(
     model: str = "",
     api_key: str = "",
     api_base: str = "",
+    ai_instructions: str = "",
 ) -> dict:
     """Return a dict with a 'suggestions' list for the weekly meal plan."""
     # Build recipe list with macro info where available
@@ -541,6 +544,9 @@ def suggest_meal_plan(
 
     if preferences:
         prompt_parts.append(f"\nAdditional preferences: {preferences}")
+
+    if ai_instructions:
+        prompt_parts.append(f"\nPersistent dietary instructions (always follow): {ai_instructions}")
 
     prompt = "\n".join(prompt_parts)
     provider = _normalize_provider(provider)

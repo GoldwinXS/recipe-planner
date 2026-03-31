@@ -27,6 +27,9 @@ class User(AbstractUser):
     # Days of week the user preps/cooks: list of ints 0 (Mon) – 6 (Sun)
     cooking_days = models.JSONField(default=_default_cooking_days, blank=True)
 
+    # Persistent dietary/AI instructions injected into every AI prompt
+    ai_instructions = models.TextField(blank=True, default='')
+
     # Ephemeral demo accounts — created fresh on each "Try Demo" click, deleted on logout
     is_demo_temp = models.BooleanField(default=False)
 

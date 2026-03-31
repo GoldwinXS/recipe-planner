@@ -16,8 +16,8 @@ export function removeEntry(weekStart, entryId) {
   return api.delete(`/meal-plans/${weekStart}/entries/${entryId}/`)
 }
 
-export function suggestMealPlan(providerConfig = {}, preferences = '', days = 7) {
-  return api.post('/meal-plans/suggest/', { ...providerConfig, preferences, days })
+export function suggestMealPlan(providerConfig = {}, preferences = '', days = 7, aiInstructions = '') {
+  return api.post('/meal-plans/suggest/', { ...providerConfig, preferences, days, ai_instructions: aiInstructions })
 }
 
 export function getMealPlanStats(weekStart) {
