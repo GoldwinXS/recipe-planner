@@ -21,6 +21,6 @@ urlpatterns = [
     path("recipes/<int:pk>/", RecipeDetailView.as_view(), name="recipe-detail"),
     path("recipes/<int:pk>/fill-macros/", RecipeFillMacrosView.as_view(), name="recipe-fill-macros"),
     path("recipes/<int:pk>/remix/", RecipeRemixView.as_view(), name="recipe-remix"),
-    path("tags/", TagListView.as_view(), name="tag-list"),
+    path("recipes/tags/", TagListView.as_view(), name="tag-list"),
     path("ai/ollama-models/", OllamaModelsView.as_view(), name="ollama-models"),
 ]
