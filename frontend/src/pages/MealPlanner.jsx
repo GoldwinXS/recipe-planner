@@ -169,12 +169,9 @@ Return ONLY valid JSON — no preamble, no markdown:
 Food safety: chicken/fish/beef fridge max 3–4 days; soups 4–5 days; grains 3–5 days`
 
       if (isBrowser) {
-        if (webLLM.status !== 'ready') {
-          const msg = 'Browser LLM is not loaded. Go to the AI settings (top bar) and load a model first.'
-          setSuggestError(msg)
-          mealPlanSuggestStore.set({ suggestError: msg, suggesting: false })
-          return
-        }
+        const browserModelId = providerConfig.model || 'Llama-3.2-1B-Instruct-q4f16_1-MLC'
+        step('Loading browser AI model…')
+        await webLLM.ensureModelLoaded(browserModelId)
 
         step('Fetching your recipes…')
         const recipesRes = await listRecipes({ page_size: 200 })

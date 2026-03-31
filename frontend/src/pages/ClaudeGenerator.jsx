@@ -389,7 +389,7 @@ export default function ClaudeGenerator() {
       : providerConfig.provider === 'ollama' ? `Ollama — ${providerConfig.model || '?'}`
       : `OpenAI-compat — ${providerConfig.model || '?'}`
 
-  const browserNotReady = isBrowser && webLLM.status !== 'ready'
+  const defaultModelId = providerConfig.model || BROWSER_MODELS[0].id
 
   const saveModelName =
     isBrowser
@@ -425,6 +425,7 @@ export default function ClaudeGenerator() {
     try {
       let recipe
       if (isBrowser) {
+        await webLLM.ensureModelLoaded(defaultModelId)
         const content = await webLLM.generate([
           { role: 'system', content: BROWSER_SYSTEM_PROMPT },
           { role: 'user', content: prompt.trim() },
@@ -483,6 +484,7 @@ export default function ClaudeGenerator() {
     const parsePrompt = PARSE_PREAMBLE + truncated + (text.length > maxChars ? '\n\n[TEXT TRUNCATED]' : '')
     try {
       if (isBrowser) {
+        await webLLM.ensureModelLoaded(defaultModelId)
         const content = await webLLM.generate(
           [{ role: 'system', content: BROWSER_SYSTEM_PROMPT }, { role: 'user', content: parsePrompt }],
           { max_tokens: 2048 },
@@ -576,15 +578,15 @@ export default function ClaudeGenerator() {
           label={providerLabel}
           size="small"
           variant="outlined"
-          color={browserNotReady ? 'warning' : isBrowser ? 'success' : 'primary'}
+          color={isBrowser && webLLM.status === 'loading' ? 'warning' : isBrowser ? 'success' : 'primary'}
           sx={{ fontSize: 12 }}
         />
       </Box>
 
-      {/* ── Browser not loaded warning ── */}
-      {browserNotReady && mode !== 'json' && (
-        <Alert severity="warning" sx={{ mb: 2, borderRadius: 3 }}>
-          Browser model not loaded. Open <strong>AI Provider Settings</strong> (robot icon in top bar) to load a model.
+      {/* ── Browser loading hint ── */}
+      {isBrowser && webLLM.status === 'idle' && mode !== 'json' && (
+        <Alert severity="info" sx={{ mb: 2, borderRadius: 3 }}>
+          Browser AI is selected but not loaded — clicking Generate will download it automatically.
         </Alert>
       )}
 
@@ -610,7 +612,7 @@ export default function ClaudeGenerator() {
                 variant="contained"
                 startIcon={<AutoAwesomeIcon />}
                 onClick={handleGenerate}
-                disabled={!prompt.trim() || generating || browserNotReady}
+                disabled={!prompt.trim() || generating}
                 size="large"
                 sx={{ borderRadius: 99, px: 3, fontWeight: 600 }}
               >
@@ -685,7 +687,7 @@ export default function ClaudeGenerator() {
                     variant="contained"
                     startIcon={<AutoAwesomeIcon />}
                     onClick={() => runParseAI(parseText, setUrlRecipe, setUrlError, setUrlParsing, 'urlRecipe', 'urlError', 'urlParsing')}
-                    disabled={urlParsing || browserNotReady}
+                                    disabled={urlParsing}
                     sx={{ borderRadius: 99, px: 3 }}
                   >
                     {urlParsing ? 'Parsing…' : 'Parse with AI'}
@@ -746,7 +748,7 @@ export default function ClaudeGenerator() {
                 variant="contained"
                 startIcon={<AutoAwesomeIcon />}
                 onClick={() => runParseAI(pasteRawText, setTextRecipe, setTextError, setTextParsing, 'textRecipe', 'textError', 'textParsing')}
-                disabled={!pasteRawText.trim() || textParsing || browserNotReady}
+                disabled={!pasteRawText.trim() || textParsing}
                 sx={{ borderRadius: 99, px: 3 }}
               >
                 {textParsing ? 'Parsing…' : 'Parse with AI'}

@@ -11,4 +11,4 @@ COPY . .
 FROM base AS production
 RUN pip install --no-cache-dir -r requirements/production.txt
 COPY . .
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "2"]
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "2", "--timeout", "120", "--graceful-timeout", "30"]

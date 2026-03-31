@@ -30,6 +30,8 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import NavLinks from './NavLinks'
 import AIProviderDialog from '../ai/AIProviderDialog'
+import ModelStatusBanner from '../ai/ModelStatusBanner'
+import OnboardingDialog from '../onboarding/OnboardingDialog'
 import useAuth from '../../hooks/useAuth'
 import { useColorMode } from '../../App'
 import { loadProviderConfig } from '../../hooks/useProviderConfig'
@@ -261,6 +263,8 @@ export default function AppShell() {
       </AppBar>
 
       <AIProviderDialog open={aiDialogOpen} onClose={() => setAiDialogOpen(false)} />
+      <ModelStatusBanner />
+      <OnboardingDialog />
 
       {/* Desktop sidebar */}
       <Drawer

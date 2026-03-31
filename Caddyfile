@@ -12,7 +12,7 @@ bitstream.mywire.org {
 
     # Django API — longer timeout for AI generation calls
     handle /api/* {
-        reverse_proxy backend:8000 {
+        reverse_proxy recipe-planner-backend-1:8000 {
             header_up X-Forwarded-Proto {scheme}
             transport http {
                 read_timeout 120s
@@ -22,13 +22,13 @@ bitstream.mywire.org {
 
     # Django admin + collected static files
     handle /admin/* {
-        reverse_proxy backend:8000 {
+        reverse_proxy recipe-planner-backend-1:8000 {
             header_up X-Forwarded-Proto {scheme}
         }
     }
 
     handle /static/* {
-        reverse_proxy backend:8000 {
+        reverse_proxy recipe-planner-backend-1:8000 {
             header_up X-Forwarded-Proto {scheme}
         }
     }
