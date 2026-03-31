@@ -13,13 +13,16 @@ function defaultConfig() {
 export function loadProviderConfig() {
   try {
     const raw = localStorage.getItem(PROVIDER_STORAGE_KEY)
-    if (!raw) return defaultConfig()
-    const saved = JSON.parse(raw)
-    // If the user never explicitly chose a provider (old default of 'claude'),
-    // re-evaluate: switch to browser if WebGPU is now available.
-    if (!saved.userChoseProvider && saved.provider === 'claude') {
-      const fresh = defaultConfig()
-      if (fresh.provider === 'browser') return { ...saved, ...fresh }
+    const saved = raw ? JSON.parse(raw) : defaultConfig()
+    // If provider is claude but no API key is set, use browser when WebGPU is available.
+    // Claude without a key will always 503; browser works for free.
+    const webGpuSupported = typeof navigator !== 'undefined' && 'gpu' in navigator
+    if (webGpuSupported && saved.provider === 'claude' && !saved.api_key) {
+      return {
+        ...saved,
+        provider: 'browser',
+        model: saved.model && !saved.model.startsWith('claude') ? saved.model : 'Llama-3.2-1B-Instruct-q4f16_1-MLC',
+      }
     }
     return saved
   } catch {
