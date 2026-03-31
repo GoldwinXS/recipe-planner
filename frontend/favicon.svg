@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="32" fill="#4f46e5"/>
+
+  <!-- Steam wisps -->
+  <path d="M22 18 Q20 14 22 10 Q24 6 22 2" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" opacity="0.7"/>
+  <path d="M32 18 Q30 14 32 10 Q34 6 32 2" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" opacity="0.7"/>
+  <path d="M42 18 Q40 14 42 10 Q44 6 42 2" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" opacity="0.7"/>
+
+  <!-- Pot body -->
+  <path d="M16 28 Q15 44 32 46 Q49 44 48 28 Z" fill="white"/>
+
+  <!-- Pot rim -->
+  <rect x="14" y="24" width="36" height="6" rx="3" fill="white"/>
+
+  <!-- Handles -->
+  <rect x="8" y="25" width="8" height="4" rx="2" fill="white"/>
+  <rect x="48" y="25" width="8" height="4" rx="2" fill="white"/>
+
+  <!-- Lid -->
+  <path d="M16 24 Q32 18 48 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="32" cy="20" r="3" fill="white"/>
+</svg>
