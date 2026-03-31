@@ -93,6 +93,7 @@ describe('suggestMealPlan', () => {
     expect(api.post).toHaveBeenCalledWith('/meal-plans/suggest/', {
       preferences: '',
       days: 7,
+      ai_instructions: '',
     })
   })
 
@@ -105,6 +106,7 @@ describe('suggestMealPlan', () => {
       provider: 'openai',
       preferences: 'vegetarian',
       days: 5,
+      ai_instructions: '',
     })
   })
 
@@ -116,6 +118,7 @@ describe('suggestMealPlan', () => {
     expect(api.post).toHaveBeenCalledWith('/meal-plans/suggest/', {
       preferences: 'low-carb',
       days: 3,
+      ai_instructions: '',
     })
   })
 })

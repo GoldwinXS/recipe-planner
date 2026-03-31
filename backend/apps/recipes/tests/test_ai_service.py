@@ -195,13 +195,13 @@ class TestGenerateRecipe:
     @patch("apps.recipes.ai_service.generate_with_claude", return_value=VALID_RECIPE)
     def test_claude_provider_dispatches_to_claude(self, mock_claude):
         result = generate_recipe("make pasta", provider="claude")
-        mock_claude.assert_called_once_with("make pasta")
+        mock_claude.assert_called_once_with("make pasta", api_key="")
         assert result["title"] == "Spaghetti Carbonara"
 
     @patch("apps.recipes.ai_service.generate_with_claude", return_value=VALID_RECIPE)
     def test_browser_provider_dispatches_to_claude(self, mock_claude):
         result = generate_recipe("make pasta", provider="browser")
-        mock_claude.assert_called_once_with("make pasta")
+        mock_claude.assert_called_once_with("make pasta", api_key="")
         assert result["title"] == "Spaghetti Carbonara"
 
     @patch("apps.recipes.ai_service.generate_with_openai_compatible", return_value=VALID_RECIPE)
