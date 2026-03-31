@@ -14,7 +14,6 @@ import {
   LinearProgress,
   Alert,
   Tooltip,
-  IconButton,
 } from '@mui/material'
 import { useTheme, alpha } from '@mui/material/styles'
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
@@ -101,7 +100,6 @@ const MODES = [
   { id: 'generate', label: 'Generate', icon: <AutoAwesomeIcon sx={{ fontSize: 15 }} /> },
   { id: 'url', label: 'Import URL', icon: <LinkIcon sx={{ fontSize: 15 }} /> },
   { id: 'paste', label: 'Paste Text', icon: <ContentPasteIcon sx={{ fontSize: 15 }} /> },
-  { id: 'json', label: 'Paste JSON', icon: <ContentCopyIcon sx={{ fontSize: 15 }} /> },
 ]
 
 function ModePill({ modes, value, onChange }) {
@@ -334,10 +332,11 @@ export default function ClaudeGenerator() {
   const [textRecipe, setTextRecipe] = useState(null)
   const [textError, setTextError] = useState(null)
 
-  // Paste JSON mode
-  const [jsonText, setJsonText] = useState('')
-  const [jsonRecipe, setJsonRecipe] = useState(null)
-  const [jsonError, setJsonError] = useState(null)
+  // Copy-JSON / paste-back workflow (inline, in generate mode)
+  const [showAiPaste, setShowAiPaste] = useState(false)
+  const [aiPasteText, setAiPasteText] = useState('')
+  const [aiPasteRecipe, setAiPasteRecipe] = useState(null)
+  const [aiPasteError, setAiPasteError] = useState(null)
   const [copied, setCopied] = useState(false)
 
   // Shared
@@ -357,8 +356,6 @@ export default function ClaudeGenerator() {
     if (s.parseText) setParseText(s.parseText)
     if (s.pasteRawText) setPasteRawText(s.pasteRawText)
     if (s.textRecipe) setTextRecipe(s.textRecipe)
-    if (s.jsonText) setJsonText(s.jsonText)
-    if (s.jsonRecipe) setJsonRecipe(s.jsonRecipe)
     if (s.generating) setGenerating(true)
     if (s.error) setError(s.error)
   }, [])
@@ -376,8 +373,8 @@ export default function ClaudeGenerator() {
 
   // Keep input state in sync with store so it survives navigation
   useEffect(() => {
-    recipeGenStore.set({ mode, prompt, urlInput, pasteRawText, jsonText })
-  }, [mode, prompt, urlInput, pasteRawText, jsonText])
+    recipeGenStore.set({ mode, prompt, urlInput, pasteRawText })
+  }, [mode, prompt, urlInput, pasteRawText])
 
   const saveSource =
     isBrowser ? 'browser' :
@@ -515,26 +512,24 @@ export default function ClaudeGenerator() {
     }
   }
 
-  const handleCopyPrompt = () => {
-    navigator.clipboard.writeText(JSON_PROMPT)
+  const handleCopyJson = () => {
+    const base = `Please create a recipe for: ${prompt.trim() || 'a delicious dish'}\n\nRespond ONLY with valid JSON in this exact structure — no preamble, no markdown, no explanation:\n\n${JSON_PROMPT}`
+    navigator.clipboard.writeText(withInstructions(base))
     setCopied(true)
+    setShowAiPaste(true)
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const handlePasteJson = () => {
-    setJsonError(null)
-    setJsonRecipe(null)
+  const handleParseAiPaste = () => {
+    setAiPasteError(null)
+    setAiPasteRecipe(null)
     setSaved(false)
-    try {
-      const data = JSON.parse(jsonText.trim())
-      if (!data.title || !data.ingredients || !data.instructions) {
-        setJsonError('Missing required fields: title, ingredients, or instructions.')
-        return
-      }
-      setJsonRecipe(data)
-    } catch {
-      setJsonError('Could not parse JSON. Make sure you pasted the full JSON response from Claude.')
+    const recipe = tryParseJson(aiPasteText)
+    if (!recipe || !recipe.title || !recipe.ingredients || !recipe.instructions) {
+      setAiPasteError("Couldn't find a valid recipe in what you pasted. Make sure you copied the full AI response.")
+      return
     }
+    setAiPasteRecipe(recipe)
   }
 
   // ── UI ───────────────────────────────────────────────────────────────────────
@@ -607,7 +602,19 @@ export default function ClaudeGenerator() {
               helperText={`${prompt.length} / ${MAX_CHARS}`}
               FormHelperTextProps={{ sx: { textAlign: 'right', opacity: 0.5 } }}
             />
-            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end', gap: 1, flexWrap: 'wrap' }}>
+              <Tooltip title="Build a prompt and copy it to your clipboard — paste into any AI chat, then paste the response back here">
+                <Button
+                  variant="outlined"
+                  startIcon={<ContentCopyIcon />}
+                  onClick={handleCopyJson}
+                  disabled={!prompt.trim() || generating}
+                  size="large"
+                  sx={{ borderRadius: 99, px: 3 }}
+                >
+                  {copied ? 'Copied!' : 'Copy JSON Prompt'}
+                </Button>
+              </Tooltip>
               <Button
                 variant="contained"
                 startIcon={<AutoAwesomeIcon />}
@@ -621,6 +628,48 @@ export default function ClaudeGenerator() {
             </Box>
             {generating && <LinearProgress sx={{ mt: 2, borderRadius: 99 }} />}
           </GlassCard>
+
+          {/* ── Paste-back area (shown after clicking Copy JSON Prompt) ── */}
+          {showAiPaste && !generated && (
+            <GlassCard sx={{ mt: 2 }}>
+              <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 0.5 }}>
+                Paste the AI response here
+              </Typography>
+              <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1.5 }}>
+                Go to any AI chat (claude.ai, ChatGPT, etc.), paste the copied prompt followed by your recipe idea, then paste the full response below. We&apos;ll extract the recipe even if it&apos;s wrapped in extra text.
+              </Typography>
+              <TextField
+                value={aiPasteText}
+                onChange={(e) => { setAiPasteText(e.target.value); setAiPasteRecipe(null); setAiPasteError(null) }}
+                fullWidth
+                multiline
+                rows={6}
+                placeholder="Paste the AI's response here…"
+              />
+              {aiPasteError && (
+                <Alert severity="error" sx={{ mt: 1.5, borderRadius: 3 }} onClose={() => setAiPasteError(null)}>
+                  {aiPasteError}
+                </Alert>
+              )}
+              <Box sx={{ mt: 1.5, display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+                <Button size="small" onClick={() => { setShowAiPaste(false); setAiPasteText(''); setAiPasteRecipe(null); setAiPasteError(null) }}>
+                  Cancel
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={handleParseAiPaste}
+                  disabled={!aiPasteText.trim()}
+                  sx={{ borderRadius: 99, px: 3 }}
+                >
+                  Extract Recipe
+                </Button>
+              </Box>
+            </GlassCard>
+          )}
+
+          {aiPasteRecipe && (
+            <RecipeResult generated={aiPasteRecipe} onSave={() => handleSave(aiPasteRecipe, 'claude')} saving={saving} saved={saved} />
+          )}
 
           {generated && (
             <RecipeResult
@@ -762,73 +811,6 @@ export default function ClaudeGenerator() {
         </>
       )}
 
-      {/* ════ Paste JSON mode ════ */}
-      {mode === 'json' && (
-        <>
-          <GlassCard>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              Copy this prompt into{' '}
-              <a href="https://claude.ai" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit' }}>
-                claude.ai
-              </a>
-              {' '}followed by your recipe request, then paste the JSON response below.
-            </Typography>
-
-            <Box
-              sx={{
-                position: 'relative',
-                p: 1.5,
-                mb: 2,
-                borderRadius: 3,
-                bgcolor: theme.palette.mode === 'dark' ? alpha('#ffffff', 0.04) : alpha('#000000', 0.03),
-                border: '1px solid',
-                borderColor: 'divider',
-                fontFamily: 'monospace',
-                fontSize: 12,
-              }}
-            >
-              <Tooltip title={copied ? 'Copied!' : 'Copy prompt'}>
-                <IconButton size="small" onClick={handleCopyPrompt} sx={{ position: 'absolute', top: 8, right: 8 }}>
-                  <ContentCopyIcon fontSize="small" />
-                </IconButton>
-              </Tooltip>
-              <Box component="pre" sx={{ m: 0, whiteSpace: 'pre-wrap', pr: 4, color: 'text.secondary' }}>
-                {JSON_PROMPT}
-              </Box>
-            </Box>
-
-            {jsonError && (
-              <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }} onClose={() => setJsonError(null)}>
-                {jsonError}
-              </Alert>
-            )}
-
-            <TextField
-              value={jsonText}
-              onChange={(e) => { setJsonText(e.target.value); setJsonRecipe(null) }}
-              fullWidth
-              multiline
-              rows={7}
-              placeholder={'{\n  "title": "...",\n  "ingredients": [...],\n  ...\n}'}
-              sx={{ fontFamily: 'monospace', fontSize: 13 }}
-            />
-            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-              <Button
-                variant="contained"
-                onClick={handlePasteJson}
-                disabled={!jsonText.trim()}
-                sx={{ borderRadius: 99, px: 3 }}
-              >
-                Preview Recipe
-              </Button>
-            </Box>
-          </GlassCard>
-
-          {jsonRecipe && (
-            <RecipeResult generated={jsonRecipe} onSave={() => handleSave(jsonRecipe)} saving={saving} saved={saved} />
-          )}
-        </>
-      )}
     </Box>
   )
 }
